@@ -1,12 +1,6 @@
 import configparser
 import tweepy
 
-from time import sleep
-from kafka import KafkaProducer
-from json import dumps
-
-
-
 #reading configuration file
 config = configparser.ConfigParser()
 config.read_file(open('twitter.cfg'))
@@ -24,28 +18,14 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SCRET)
 api = tweepy.API(auth)
 
 
-public_tweets = api.home_timeline()
-
-producer = KafkaProducer(
-  value_serializer = lambda m: dumps(m).encode("utf-8"),
-  bootstrap_servers=['localhost:29092'])
-
-topic_name = "netflix"
-
-#for i in range(1, 100):
-#  producer.send("t1", value={"hello" : i})
-#  sleep(0.001)
-
-  #override tweepy.StreamListener to add logic to on_status
+#override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
         print(status.text)
-        producer.send("t1", value={"twit" : status.text })
-        #print("test")
 
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
 
+print(myStream.filter(track=['python']))
 
-myStream.filter(track=['python'], is_async=True)
