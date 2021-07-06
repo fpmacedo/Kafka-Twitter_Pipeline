@@ -30,22 +30,19 @@ producer = KafkaProducer(
   value_serializer = lambda m: dumps(m).encode("utf-8"),
   bootstrap_servers=['localhost:29092'])
 
-topic_name = "netflix"
-
-#for i in range(1, 100):
-#  producer.send("t1", value={"hello" : i})
-#  sleep(0.001)
-
-  #override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
 
+    # Streaming API. Streaming API fetches live tweets
     def on_status(self, status):
+        print(status.id)
         print(status.text)
-        producer.send("t1", value={"twit" : status.text })
-        #print("test")
+        producer.send("twitter", value={"id" : status.id ,"text" : status.text })
+     
+     # To print the status if an error happens
+    def on_error(self,status):
+        print(status)
+
 
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
-
-
-myStream.filter(track=['python'], is_async=True)
+myStream.filter(track=['python'])
