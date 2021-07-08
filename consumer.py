@@ -6,5 +6,5 @@ consumer = KafkaConsumer("twitter",
   enable_auto_commit=True,
   group_id="tech-core-easy-1")
 
-for message in consumer:
-  print(message)
+for user_id in consumer:
+  print(user_id)

@@ -1,6 +1,7 @@
 import configparser
 import tweepy
 
+from datetime import datetime
 from kafka import KafkaProducer
 from json import dumps
 
@@ -13,9 +14,9 @@ def twitter_auth(config):
       API authentication using tweepy.
       
       Parameters:
-        config: the configurations from .cfg file
+        - config: the configurations from .cfg file
       Returns:
-        api: the API authenticated metod
+        - api: the API authenticated metod
   """
 
   #setting up twitter variables
@@ -37,9 +38,9 @@ def kafka_producer(bootstrap_server):
   """ Create a Kafka producer serializing the data in JSON UTF-8.
       
       Parameters:
-        bootstrap_server: the Kafka bootstrap server adress
+        - bootstrap_server: the Kafka bootstrap server adress
       Returns:
-        producer: the Kafka Producer
+        - producer: the Kafka Producer
   """
 
   producer = KafkaProducer(
@@ -55,18 +56,44 @@ def start_streaming(producer ,api , word):
   """ Create a streaming process using the passed word.
       
       Parameters:
-        producer: the Kafka Producer;
-        api: the API authenticated metod;
-        word: the word to filter the tweets
+        - producer: the Kafka Producer;
+        - api: the API authenticated metod;
+        - word: the word to filter the tweets
   """
 
   class MyStreamListener(tweepy.StreamListener):
     
     # Streaming API. Streaming API fetches live tweets
     def on_status(self, status):
+
+        #Print user info
+        print("User Info:")
+        print(status.user.id)
+        print(status.user.name)
+        print(status.user.verified)
+        print(status.user.followers_count)
+        print(status.user.friends_count)
+        print(datetime.timestamp(status.user.created_at))
+        #Print tweet info
+        print("Tweet Info:")
         print(status.id)
         print(status.text)
-        producer.send("twitter", value={"id" : status.id ,"text" : status.text })
+        print(datetime.timestamp(status.created_at))
+        #print(status.entities)
+        print("-------------------------------------------------------------")
+
+        producer.send("twitter",
+         value={
+                "user_id" : status.user.id,
+                "user_name" : status.user.name,
+                "verified" : status.user.verified,
+                "followers_count" : status.user.followers_count,
+                "friends_count" : status.user.friends_count,
+                "user_created_at" : datetime.timestamp(status.user.created_at),
+                "tweet_id" : status.id,
+                "tweet_message" : status.text,
+                "tweet_created_at" : datetime.timestamp(status.created_at)
+                 })
         
     # To print the status if an error happens
     def on_error(self,status):
@@ -92,7 +119,7 @@ def main():
   producer = kafka_producer('localhost:29092')
 
   #start the streaming process
-  start_streaming(producer ,api , 'python')
+  start_streaming(producer ,api , 'bolsonaro')
 
 
 if __name__ == "__main__":
