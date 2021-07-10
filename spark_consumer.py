@@ -58,6 +58,7 @@ def process_twitter_streaming(spark, bootstrap_server, output_path):
     schema_twitter = StructType(
         [StructField("user_id",LongType(),True),
         StructField("user_name",StringType(),True),
+        StructField("screen_name",StringType(),True),
         StructField("verified",BooleanType(),True),
         StructField("followers_count",IntegerType(),True),
         StructField("friends_count",IntegerType(),True),
@@ -78,6 +79,7 @@ def process_twitter_streaming(spark, bootstrap_server, output_path):
                                             col("topic"),
                                             col("value.user_id"),
                                             col("value.user_name"),
+                                            col("value.screen_name"),
                                             col("value.verified"),
                                             col("value.followers_count"),
                                             col("value.friends_count"),

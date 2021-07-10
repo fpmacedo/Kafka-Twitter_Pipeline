@@ -51,7 +51,7 @@ def kafka_producer(bootstrap_server):
 
 
 
-def start_streaming(producer ,api , word):
+def start_streaming(producer, api, word):
 
   """ Create a streaming process using the passed word.
       
@@ -86,6 +86,7 @@ def start_streaming(producer ,api , word):
          value={
                 "user_id" : status.user.id,
                 "user_name" : status.user.name,
+                "screen_name": status.user.screen_name,
                 "verified" : status.user.verified,
                 "followers_count" : status.user.followers_count,
                 "friends_count" : status.user.friends_count,
@@ -114,12 +115,12 @@ def main():
 
   #twitter authentication
   api = twitter_auth(config)
-
+  
   #create a kafka producer
   producer = kafka_producer('localhost:29092')
 
   #start the streaming process
-  start_streaming(producer ,api , 'bolsonaro')
+  start_streaming(producer ,api , 'python')
 
 
 if __name__ == "__main__":
