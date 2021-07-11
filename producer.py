@@ -70,6 +70,7 @@ def start_streaming(producer, api, word):
         print("User Info:")
         print(status.user.id)
         print(status.user.name)
+        print(status.user.screen_name)
         print(status.user.verified)
         print(status.user.followers_count)
         print(status.user.friends_count)
